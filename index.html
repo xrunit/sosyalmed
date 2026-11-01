@@ -241,14 +241,34 @@ function mkDb(){
   function col(path){var f={o:null,l:500},q={};
     q.orderBy=function(x){f.o=x;return q};q.limit=function(n){f.l=n;return q};
     q.add=function(d){return put(path,rid(),d)};
-    q.onSnapshot=function(next,err){var rows=[];
-      function emit(){var r=rows.slice();if(f.o)r.sort(function(a,b){return (a.data[f.o]||0)-(b.data[f.o]||0)});
-        var docs=r.slice(-f.l).map(function(x){return {id:x.id,data:function(){return x.data}}});next({docs:docs,size:docs.length,empty:!docs.length})}
+    q.onSnapshot=function(next,err){var rows=[],pending={},loaded=false;
+      function emit(){var r=rows.slice();if(f.o)r.sort(function(a,b){
+          var av=f.o==="ts"&&a.created_at?Date.parse(a.created_at):(a.data[f.o]||0);
+          var bv=f.o==="ts"&&b.created_at?Date.parse(b.created_at):(b.data[f.o]||0);
+          if(av!==bv)return av-bv;
+          return a.id<b.id?-1:a.id>b.id?1:0
+        });
+        var docs=r.slice(-f.l).map(function(x){return {id:x.id,data:function(){
+          if(x.created_at&&typeof x.data.ts==="number")return Object.assign({},x.data,{ts:Date.parse(x.created_at)});
+          return x.data
+        }}});next({docs:docs,size:docs.length,empty:!docs.length})}
       function drop(id){rows=rows.filter(function(x){return x.id!==id})}
-      sb.from("docs").select("id,data").eq("collection",path).limit(1000).then(function(r){if(r.error){if(err)err(r.error);return}rows=r.data;emit()});
+      sb.from("docs").select("id,data,created_at").eq("collection",path).limit(1000).then(function(r){
+        if(r.error){if(err)err(r.error);return}
+        rows=r.data;
+        Object.keys(pending).forEach(function(id){drop(id);if(pending[id])rows.push(pending[id])});
+        loaded=true;emit()
+      });
       var ch=sb.channel("c"+rid()).on("postgres_changes",{event:"*",schema:"public",table:"docs",filter:"collection=eq."+path},function(p){
-          if(p.eventType==="DELETE")drop(p.old.id);else{drop(p.new.id);rows.push({id:p.new.id,data:p.new.data})}emit()})
-        .on("postgres_changes",{event:"DELETE",schema:"public",table:"docs"},function(p){if(p.old&&p.old.collection===path){drop(p.old.id);emit()}}).subscribe();
+          if(p.eventType==="DELETE"){
+            if(!loaded)pending[p.old.id]=null;
+            drop(p.old.id)
+          }else{
+            var row={id:p.new.id,data:p.new.data,created_at:p.new.created_at};
+            if(!loaded)pending[p.new.id]=row;
+            drop(p.new.id);rows.push(row)
+          }emit()})
+        .on("postgres_changes",{event:"DELETE",schema:"public",table:"docs"},function(p){if(p.old&&p.old.collection===path){if(!loaded)pending[p.old.id]=null;drop(p.old.id);emit()}}).subscribe();
       return function(){sb.removeChannel(ch)}};
     return q}
   return {collection:col,doc:function(p){var x=split(p);return {set:function(d){return put(x.c,x.id,d)},delete:function(){return sb.from("docs").delete().eq("collection",x.c).eq("id",x.id).then(chk)}}}}}
