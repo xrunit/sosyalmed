@@ -294,8 +294,8 @@ $("authForm").onsubmit=async function(e){
       :await sb.auth.signInWithPassword({email:email,password:password});
     if(result.error)throw result.error;
     if(registering&&!result.data.session){
-      $("authError").style.color="var(--mut)";
-      $("authError").textContent="Kayıt başarılı. Giriş yapmadan önce e-posta adresine gönderilen doğrulama bağlantısını aç.";
+      $("authError").style.color="#d33";
+      $("authError").textContent="Kayıttan sonra doğrudan giriş için Supabase Authentication ayarlarında Email provider içindeki Confirm email seçeneğini kapatıp tekrar dene.";
       return;
     }
     location.reload();
