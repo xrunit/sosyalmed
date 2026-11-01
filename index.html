@@ -225,6 +225,17 @@ var CFG=window.VERCELL_CONFIG||{},BU=(CFG.url||"")+"/storage/v1/object/public/me
 function rid(){return crypto.randomUUID().replace(/-/g,"")}
 function split(p){var i=p.lastIndexOf("/");return {c:p.slice(0,i),id:p.slice(i+1)}}
 function chk(r){if(r&&r.error)throw r.error;return r}
+function frontendKeyAllowed(key){
+  if(typeof key!=="string")return false;
+  if(/^sb_publishable_[A-Za-z0-9_-]+$/.test(key))return true;
+  var parts=key.split(".");
+  if(parts.length!==3)return false;
+  try{
+    var payload=parts[1].replace(/-/g,"+").replace(/_/g,"/");
+    payload+=new Array((4-payload.length%4)%4+1).join("=");
+    return JSON.parse(atob(payload)).role==="anon";
+  }catch(e){return false}
+}
 function mkDb(){
   function put(c,id,d){return sb.from("docs").upsert({collection:c,id:id,data:d}).then(chk)}
   function col(path){var f={o:null,l:500},q={};
@@ -246,7 +257,7 @@ function mkRoom(){var ch=sb.channel("typing"),on=false;function go(){if(!on){on=
     emit:function(t,d){go();return ch.send({type:"broadcast",event:t,payload:{by:ME.id,data:d}})}}}
 function mkAssets(){return {upload:function(b){var id=rid();return sb.storage.from("media").upload(id,b,{contentType:b.type||"application/octet-stream"}).then(chk).then(function(){return {id:id,url:BU+id}})}}}
 async function boot(){
-  if(!CFG.url||!CFG.anonKey||/YOUR/.test(CFG.url)||!window.supabase){$("login").className="on";$("lm").textContent="Supabase bağlantısı yapılandırılmamış. Lütfen config.js ayarlarını kontrol et.";["lb","authDivider","authForm","authMode"].forEach(function(i){$(i).hidden=true});return}
+  if(!CFG.url||/YOUR/.test(CFG.url)||!frontendKeyAllowed(CFG.anonKey)||!window.supabase){$("login").className="on";$("lm").textContent="Supabase bağlantı ayarları geçersiz. config.js içinde URL ve yalnızca anon/publishable anahtar kullan.";["lb","authDivider","authForm","authMode"].forEach(function(i){$(i).hidden=true});return}
   sb=supabase.createClient(CFG.url,CFG.anonKey);
   var r=await sb.auth.getSession();
   if(r.error){$("login").className="on";$("authError").textContent=r.error.message;return}
