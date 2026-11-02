@@ -1,9 +1,9 @@
 import { supabase } from '@/js/supabase.js';
 
-export const PROFILE_COLORS = ['#00d4ff', '#00a3e0', '#0077ff', '#22d3ee', '#0284c7', '#38bdf8'];
+export const PROFILE_COLORS = ['#075FEA', '#4D8CFF', '#7B9EFF', '#3054A8', '#38BDF8', '#92B7FF'];
 
-const PROFILE_FIELDS = 'id,name,bio,color,created_at';
-const POST_FIELDS = 'id,user_id,body,created_at';
+const PROFILE_FIELDS = 'id,name,bio,color,avatar_url,created_at';
+const POST_FIELDS = 'id,user_id,body,media_path,media_type,post_type,created_at';
 const NOTIFICATION_FIELDS = 'id,user_id,actor_id,type,read,created_at';
 
 export function unwrap({ data, error }) {
@@ -54,8 +54,8 @@ export async function fetchProfiles() {
   );
 }
 
-export async function updateProfile(userId, { name, bio, color }) {
-  unwrap(await supabase.from('profiles').update({ name, bio, color }).eq('id', userId));
+export async function updateProfile(userId, { name, bio, color, avatar_url }) {
+  unwrap(await supabase.from('profiles').update({ name, bio, color, avatar_url }).eq('id', userId));
 }
 
 export async function fetchFollows() {
@@ -101,8 +101,8 @@ export async function fetchPosts(userId) {
   return unwrap(await query);
 }
 
-export async function createPost(userId, body) {
-  unwrap(await supabase.from('posts').insert({ user_id: userId, body }));
+export async function createPost(userId, body, media = {}) {
+  unwrap(await supabase.from('posts').insert({ user_id: userId, body, ...media }));
 }
 
 export async function deletePost(postId) {
