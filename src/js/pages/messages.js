@@ -21,6 +21,7 @@ bootPage('messages', renderMessages);
 
 function renderMessages({ user }) {
   const page = document.getElementById('page');
+  page.classList.add('main--chat');
   page.innerHTML = `
     <div class="chat-layout" id="chat-layout">
       <section class="convo-pane">
