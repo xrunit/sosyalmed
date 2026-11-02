@@ -1,253 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f6f5f1">
-  <title>Vercell</title>
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="#home" data-page-link="home" aria-label="Vercell ana sayfa">
-      <span class="brand-mark">v</span>
-      <span>vercell</span>
-    </a>
-    <p class="topbar-note">Düşüncelerini paylaş, sohbete katıl.</p>
-    <button class="user-chip" id="me" type="button" aria-label="Profilini aç">Hesap</button>
-  </header>
-
-  <div class="app-shell">
-    <aside class="sidebar" aria-label="Ana menü">
-      <nav class="primary-nav">
-        <button class="nav-link active" type="button" data-page="home"><span>⌂</span> Ana sayfa</button>
-        <button class="nav-link" type="button" data-page="messages"><span>◌</span> Mesajlar</button>
-        <button class="nav-link" type="button" data-page="community"><span>♡</span> Arkadaşlar <span class="nav-count" id="notificationCount" hidden>0</span></button>
-        <button class="nav-link" type="button" data-page="profile"><span>☺</span> Profilim</button>
-      </nav>
-      <div class="sidebar-divider"></div>
-      <div class="sidebar-user">
-        <span class="eyebrow">SENİN ALANIN</span>
-        <strong id="sidebarName">Vercell'e hoş geldin</strong>
-        <p>Profilini düzenle, odalara katıl ve mesajlarını paylaş.</p>
-        <button class="text-button" type="button" data-page="profile">Profili görüntüle <span>→</span></button>
-      </div>
-      <p class="sidebar-footer">Vercell · birlikte daha güzel</p>
-    </aside>
-
-    <main class="main-content">
-      <section class="page-view active" id="page-home" aria-labelledby="homeTitle">
-        <div class="page-heading">
-          <div>
-            <span class="eyebrow">TOPLULUK</span>
-            <h1 id="homeTitle">Ana sayfa</h1>
-            <p>Bugün aklından neler geçiyor?</p>
-          </div>
-          <span class="heading-sparkle" aria-hidden="true">✳</span>
-        </div>
-        <div class="content-columns">
-          <div class="feed-column">
-            <form class="post-composer panel" id="postForm">
-              <div class="composer-avatar" id="composerAvatar">V</div>
-              <div class="composer-fields">
-                <label class="sr-only" for="postText">Bir şeyler paylaş</label>
-                <textarea id="postText" maxlength="1000" rows="3" placeholder="Aklından neler geçiyor?" required></textarea>
-                <div class="composer-footer">
-                  <span class="composer-hint">Kısa bir not paylaş · en fazla 1000 karakter</span>
-                  <button class="primary-button" id="postSubmit" type="submit">Paylaş <span>↗</span></button>
-                </div>
-              </div>
-            </form>
-            <div class="feed-header">
-              <h2>Akış</h2>
-              <span class="feed-live"><i></i> Canlı</span>
-            </div>
-            <div class="feed-list" id="feed">
-              <div class="empty-card">Akış yükleniyor…</div>
-            </div>
-          </div>
-          <aside class="home-aside">
-            <div class="welcome-card">
-              <span class="welcome-art" aria-hidden="true">✦</span>
-              <span class="eyebrow">VERCELL TOPLULUĞU</span>
-              <h2>Burada her sesin yeri var.</h2>
-              <p>Bir paylaşım yap veya canlı sohbet odalarına göz at.</p>
-              <button class="light-button" type="button" data-page="messages">Sohbete git <span>→</span></button>
-            </div>
-            <div class="tip-card panel">
-              <span class="eyebrow">KÜÇÜK BİR İPUCU</span>
-              <p>Profilini kişiselleştirerek toplulukta kendini tanıtabilirsin.</p>
-              <button class="text-button" type="button" data-page="profile">Profili düzenle <span>→</span></button>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="page-view" id="page-messages" aria-labelledby="messagesTitle">
-        <div class="page-heading compact-heading">
-          <div>
-            <span class="eyebrow">BİRLİKTE SOHBET</span>
-            <h1 id="messagesTitle">Mesajlar</h1>
-            <p>Odaları seç, sohbete katıl.</p>
-          </div>
-          <span class="heading-sparkle" aria-hidden="true">◌</span>
-        </div>
-        <div class="messages-layout panel">
-          <aside class="room-rail">
-            <div class="room-rail-heading">
-              <span class="eyebrow">SOHBETLER</span>
-              <button class="room-add-button" id="newRoom" type="button" title="Yeni özel oda oluştur">+</button>
-            </div>
-            <nav id="rooms" class="room-list" aria-label="Sohbet odaları"></nav>
-            <div class="room-rail-heading dm-heading"><span class="eyebrow">ÖZEL MESAJLAR</span></div>
-            <nav id="dmList" class="room-list" aria-label="Özel mesajlar"></nav>
-          </aside>
-          <section class="chat-panel" aria-label="Oda mesajları">
-            <div class="chat-room-heading">
-              <div class="room-icon">#</div>
-              <div><h2 id="roomTitle">Genel</h2><p>Herkesle sohbet et</p></div>
-              <button class="room-info-button" id="roomInfo" type="button" aria-label="Sohbet bilgisi ve ayarları">ⓘ</button>
-            </div>
-            <div id="msgs" class="message-list" aria-live="polite">
-              <div class="empty-card">Mesajlar yükleniyor…</div>
-            </div>
-            <div id="typ" class="typing-indicator" aria-live="polite"></div>
-            <div class="reply-preview" id="replyPreview" hidden><span id="replyLabel"></span><button id="cancelReply" type="button" aria-label="Yanıtı iptal et">×</button></div>
-            <div class="chat-composer">
-              <button class="icon-button" id="pg" hidden type="button" title="Galeriden fotoğraf">▧</button>
-              <button class="icon-button" id="pcam" hidden type="button" title="Kamerayla fotoğraf çek">◎</button>
-              <button class="icon-button" id="pgif" hidden type="button" title="GIF oluştur">GIF</button>
-              <button class="icon-button" id="mic" hidden type="button" title="Sesli mesaj kaydet">♫</button>
-              <input type="file" id="fg" accept="image/*" hidden>
-              <input type="file" id="fc" accept="image/*" capture="environment" hidden>
-              <label class="sr-only" for="inp">Mesaj yaz</label>
-              <input id="inp" placeholder="Mesajını yaz…" maxlength="1000" autocomplete="off" disabled>
-              <button class="primary-button send-button" id="send" type="button" disabled>Gönder <span>↗</span></button>
-            </div>
-          </section>
-        </div>
-      </section>
-
-      <section class="page-view" id="page-community" aria-labelledby="communityTitle">
-        <div class="page-heading">
-          <div><span class="eyebrow">TOPLULUĞUNU BÜYÜT</span><h1 id="communityTitle">Arkadaşlar</h1><p>Takip et, karşılıklı takipte özel mesajlaşın.</p></div>
-          <span class="heading-sparkle" aria-hidden="true">♡</span>
-        </div>
-        <div class="community-columns">
-          <div class="panel community-panel">
-            <div class="community-panel-heading"><div><span class="eyebrow">KEŞFET</span><h2>Kişileri bul</h2></div></div>
-            <label class="sr-only" for="peopleSearch">Kişi ara</label>
-            <input id="peopleSearch" class="people-search" type="search" placeholder="İsimle ara…">
-            <div id="peopleList" class="people-list"><div class="empty-card">Kişiler yükleniyor…</div></div>
-          </div>
-          <div class="panel community-panel">
-            <div class="community-panel-heading"><div><span class="eyebrow">SANA GELENLER</span><h2>Bildirimler</h2></div><span id="notificationPanelCount" class="feed-live">0 yeni</span></div>
-            <div id="notifications" class="notifications-list"><div class="empty-card">Bildirim yok.</div></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page-view" id="page-profile" aria-labelledby="profilePageTitle">
-        <div class="page-heading">
-          <div>
-            <span class="eyebrow">SENİN ALANIN</span>
-            <h1 id="profilePageTitle">Profilim</h1>
-            <p>Toplulukta nasıl göründüğünü düzenle.</p>
-          </div>
-          <button class="secondary-button" id="editProfile" type="button">Profili düzenle <span>↗</span></button>
-        </div>
-        <div class="profile-card panel">
-          <div class="profile-cover"></div>
-          <div class="profile-details">
-            <div class="profile-avatar" id="profileAvatar">V</div>
-            <div class="profile-copy">
-              <h2 id="profileName">Vercell kullanıcısı</h2>
-              <p id="profileEmail"></p>
-            </div>
-            <span class="profile-badge">✦ Üye</span>
-          </div>
-          <p class="profile-bio">Vercell topluluğunun bir parçası.</p>
-        </div>
-        <div class="profile-posts-heading"><h2>Paylaşımlarım</h2><span id="profilePostCount">0 paylaşım</span></div>
-        <div class="feed-list" id="profilePosts"><div class="empty-card">Paylaşımların burada görünecek.</div></div>
-      </section>
-    </main>
-  </div>
-
-  <nav class="mobile-nav" aria-label="Alt menü">
-    <button class="mobile-nav-link active" type="button" data-page="home"><span>⌂</span><small>Ana sayfa</small></button>
-    <button class="mobile-nav-link" type="button" data-page="messages"><span>◌</span><small>Mesajlar</small></button>
-    <button class="mobile-nav-link" type="button" data-page="community"><span>♡</span><small>Arkadaşlar</small></button>
-    <button class="mobile-nav-link" type="button" data-page="profile"><span>☺</span><small>Profilim</small></button>
-  </nav>
-
-  <div id="login" class="auth-overlay">
-    <div class="auth-card">
-      <span class="brand-mark auth-mark">v</span>
-      <span class="eyebrow">VERCELL TOPLULUĞU</span>
-      <h1>Güzel şeyler burada başlar.</h1>
-      <p id="lm">Sohbete katılmak için giriş yap veya yeni hesap oluştur.</p>
-      <button id="lb" class="google-button" type="button">Google ile devam et</button>
-      <div class="auth-divider" id="authDivider">veya e-posta ile</div>
-      <form class="auth-form" id="authForm">
-        <input id="authName" type="text" maxlength="24" autocomplete="name" placeholder="Görünen ad" aria-label="Görünen ad" hidden>
-        <input id="authEmail" type="email" autocomplete="email" placeholder="E-posta" aria-label="E-posta" required>
-        <input id="authPassword" type="password" minlength="6" autocomplete="current-password" placeholder="Şifre (en az 6 karakter)" aria-label="Şifre" required>
-        <button id="authSubmit" class="primary-button" type="submit">Giriş yap</button>
-        <p id="authError" role="alert" aria-live="polite"></p>
-      </form>
-      <button id="authMode" class="auth-mode-button" type="button">Hesabın yok mu? Kayıt ol</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Akım: gönderilerini paylaş, topluluğu keşfet ve mesajlaş." />
+    <meta name="theme-color" content="#000000" />
+    <title>Akış · Akım</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+  </head>
+  <body>
+    <div id="auth-root"></div>
+    <div class="shell" id="app" hidden>
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="main" id="page"></main>
+      <aside class="aside" id="aside"></aside>
+      <nav class="bottom-nav" id="bottom-nav" aria-label="Mobil menü"></nav>
     </div>
-  </div>
-
-  <div id="pm" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-heading"><div><span class="eyebrow">HESAP AYARLARI</span><h2>Profilim</h2></div><button id="pc" class="close-button" type="button" aria-label="Kapat">×</button></div>
-      <div class="profile-preview"><div class="av" id="pv"></div></div>
-      <div class="profile-photo-actions"><button id="pfg" type="button">▧ Galeri</button><button id="pfc" type="button">◎ Kamera</button><button id="pfx" type="button">Fotoğrafı kaldır</button></div>
-      <input type="file" id="fpg" accept="image/*" hidden>
-      <input type="file" id="fpc" accept="image/*" capture="user" hidden>
-      <label class="field-label" for="pn">Görünen ad</label>
-      <input class="profile-name-input" id="pn" maxlength="24" placeholder="Görünen ad">
-      <span class="field-label">Avatarını seç</span><div class="g" id="pe"></div>
-      <span class="field-label">Rengini seç</span><div class="g" id="pcl"></div>
-      <div class="modal-actions"><button id="out" class="secondary-button" type="button">Çıkış</button><button id="ps" class="primary-button" type="button">Kaydet</button></div>
-    </div>
-  </div>
-
-  <div id="gm" class="modal-overlay">
-    <div class="modal-card gif-modal">
-      <div class="modal-heading"><div><span class="eyebrow">SOHBETİ HAREKETLENDİR</span><h2>GIF oluştur</h2></div><button id="gx" class="close-button" type="button" aria-label="Kapat">×</button></div>
-      <p class="modal-description">2–12 fotoğraf ekle. Kaldırmak için küçük resme dokun.</p>
-      <div id="gt" class="gif-thumbnails"></div>
-      <div class="gif-tools"><button id="gg" type="button">▧ Galeri</button><button id="gc" type="button">◎ Kamera</button><label for="gs">Hız <select id="gs"><option value="60">Yavaş</option><option value="35" selected>Orta</option><option value="15">Hızlı</option></select></label></div>
-      <input type="file" id="fgm" accept="image/*" multiple hidden>
-      <input type="file" id="fgc" accept="image/*" capture="environment" hidden>
-      <div class="modal-actions"><button id="gok" class="primary-button" type="button" disabled>Gönder <span>↗</span></button></div>
-    </div>
-  </div>
-
-  <div id="roomModal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-heading"><div><span class="eyebrow">ODA BİLGİLERİ</span><h2 id="roomModalTitle">Sohbet odası</h2></div><button id="closeRoomModal" class="close-button" type="button" aria-label="Kapat">×</button></div>
-      <p class="room-owner-line" id="roomOwner"></p>
-      <div class="room-members-heading"><span class="field-label">Üyeler</span><span id="roomMemberCount"></span></div>
-      <div id="roomMembers" class="room-member-list"></div>
-      <div id="roomAdminControls" class="room-admin-controls" hidden>
-        <div id="roomRenameControls"><label class="field-label" for="roomRename">Oda adı</label>
-        <div class="room-rename-row"><input class="profile-name-input" id="roomRename" maxlength="30"><button class="secondary-button" id="saveRoomName" type="button">Kaydet</button></div></div>
-        <label class="field-label" for="roomAdminSelect">Yönetici ata</label>
-        <div class="room-rename-row"><select class="profile-name-input" id="roomAdminSelect"><option value="">Üye seç</option></select><button class="secondary-button" id="grantRoomAdmin" type="button">Ata</button></div>
-        <div id="roomTransferControls" hidden><label class="field-label" for="roomTransferSelect">Oda sahibini devret</label><div class="room-rename-row"><select class="profile-name-input" id="roomTransferSelect"><option value="">Yeni sahip seç</option></select><button class="secondary-button" id="transferRoomOwner" type="button">Devret</button></div></div>
-        <label class="field-label" for="roomInviteSelect">Özel odaya üye ekle</label>
-        <div class="room-rename-row"><select class="profile-name-input" id="roomInviteSelect"><option value="">Kişi seç</option></select><button class="secondary-button" id="inviteRoomMember" type="button">Ekle</button></div>
-      </div>
-      <div class="modal-actions"><button class="secondary-button" id="leaveRoom" type="button">Odadan çık</button><button class="primary-button" id="dismissRoomModal" type="button">Tamam</button></div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="config.js"></script>
-  <script src="js/app.js"></script>
-</body>
+    <script type="module" src="/src/js/pages/home.js"></script>
+  </body>
 </html>

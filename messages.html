@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Akım mesajlar: odalarda sohbet et ve karşılıklı takip ettiğin kişilerle özel mesajlaş." />
+    <meta name="theme-color" content="#000000" />
+    <title>Mesajlar · Akım</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/css/styles.css" />
+  </head>
+  <body>
+    <div id="auth-root"></div>
+    <div class="shell" id="app" hidden>
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="main main--chat" id="page"></main>
+      <nav class="bottom-nav" id="bottom-nav" aria-label="Mobil menü"></nav>
+    </div>
+    <script type="module" src="/src/js/pages/messages.js"></script>
+  </body>
+</html>
