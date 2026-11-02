@@ -417,6 +417,7 @@ textarea.field {
 
 .main--chat {
   height: calc(100dvh - var(--bottom-nav));
+  min-height: 0;
   padding-bottom: 0;
   overflow: hidden;
 }
