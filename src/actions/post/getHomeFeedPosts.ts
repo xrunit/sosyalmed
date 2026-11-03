@@ -57,7 +57,7 @@ export async function getHomeFeedPosts(params: {
    }
 
    const { data: postIds, error: rpcError } = await supabase.rpc('get_following_posts', {
-      p_follower_id: user.id,
+      follower_id: user.id,
       before_cursor: cursor ?? undefined,
       page_size: PAGE_SIZE,
    });
