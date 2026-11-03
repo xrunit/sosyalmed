@@ -1,0 +1,50 @@
+import * as stylex from '@stylexjs/stylex';
+import { colors, radius } from '../../../../styles/tokens.stylex';
+
+export const styles = stylex.create({
+   rail: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '24px',
+   },
+   group: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '4px',
+   },
+   button: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'none',
+      border: 'none',
+      color: colors.textPrimary,
+      '@media (max-width: 767px)': {
+         color: 'white',
+         filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))',
+      },
+   },
+   count: {
+      color: colors.textPrimary,
+      fontSize: '13px',
+      fontWeight: 600,
+      '@media (max-width: 767px)': {
+         color: 'white',
+         textShadow: '0 1px 3px rgba(0,0,0,0.6)',
+      },
+   },
+   likedIcon: {
+      color: colors.danger,
+   },
+   avatar: {
+      width: '28px',
+      height: '28px',
+      borderRadius: radius.xs,
+      objectFit: 'cover',
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: colors.border,
+   },
+});

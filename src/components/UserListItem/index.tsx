@@ -1,0 +1,108 @@
+'use client';
+
+import * as stylex from '@stylexjs/stylex';
+import Link from 'next/link';
+import UserAvatar from '@/src/components/UserAvatar';
+import OtherUserUsername from '../Username/OtherUserUsername';
+import { styles } from './index.stylex';
+
+function handleKeyDown(e: React.KeyboardEvent, callback: () => void) {
+   if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      callback();
+   }
+}
+
+interface UserListItemProps {
+   avatarUrl: string | null;
+   avatarAlt?: string;
+   username: string;
+   userId?: string;
+   name: React.ReactNode;
+   fullName: React.ReactNode;
+   rightElement?: React.ReactNode;
+   onClick?: () => void;
+   role?: string;
+   ariaSelected?: boolean;
+   href?: string;
+}
+
+export function UserListItem({
+   avatarUrl,
+   avatarAlt,
+   username,
+   userId,
+   fullName,
+   rightElement,
+   onClick,
+   role,
+   ariaSelected,
+   href,
+}: UserListItemProps) {
+   const content = (
+      <>
+         <div {...stylex.props(styles.info)}>
+            <UserAvatar
+               src={avatarUrl}
+               alt={avatarAlt ?? username}
+               size={44}
+               username={username}
+               userId={userId}
+            />
+            <div {...stylex.props(styles.names)}>
+               {username && userId ? (
+                  <OtherUserUsername userProfile={{ username, id: userId }} />
+               ) : (
+                  <div {...stylex.props(styles.name)}>{username}</div>
+               )}
+               <div {...stylex.props(styles.subtitle)}>{fullName}</div>
+            </div>
+         </div>
+         {rightElement && <div {...stylex.props(styles.right)}>{rightElement}</div>}
+      </>
+   );
+
+   if (href) {
+      return (
+         <Link href={href} {...stylex.props(styles.row)}>
+            {content}
+         </Link>
+      );
+   }
+
+   return (
+      // biome-ignore lint/a11y/noStaticElementInteractions: role is set conditionally when onClick exists
+      // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role is passed dynamically and can be option
+      <div
+         {...stylex.props(styles.row)}
+         onClick={onClick}
+         role={onClick ? (role ?? 'button') : undefined}
+         tabIndex={onClick ? 0 : undefined}
+         aria-selected={onClick ? ariaSelected : undefined}
+         onKeyDown={onClick ? e => handleKeyDown(e, onClick) : undefined}
+      >
+         {content}
+      </div>
+   );
+}
+
+interface UserListSkeletonProps {
+   count?: number;
+}
+
+export function UserListSkeleton({ count = 1 }: UserListSkeletonProps) {
+   return (
+      <>
+         {Array.from({ length: count }, (_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders have no stable id
+            <div key={`sk-${i}`} {...stylex.props(styles.skeletonRow)} aria-hidden="true">
+               <div {...stylex.props(styles.skeletonAvatar)} />
+               <div {...stylex.props(styles.skeletonLines)}>
+                  <div {...stylex.props(styles.skeletonName)} />
+                  <div {...stylex.props(styles.skeletonSubtitle)} />
+               </div>
+            </div>
+         ))}
+      </>
+   );
+}
