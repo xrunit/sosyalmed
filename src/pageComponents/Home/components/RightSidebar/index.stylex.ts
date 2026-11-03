@@ -1,0 +1,116 @@
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../../../styles/tokens.stylex';
+
+export const styles = stylex.create({
+   root: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px',
+   },
+   profileCard: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '8px 0',
+   },
+   profileInfo: {
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+      minWidth: 0,
+   },
+   profileUsername: {
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      color: colors.textPrimary,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+   },
+   profileName: {
+      fontSize: '0.875rem',
+      color: colors.textSecondary,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+   },
+   anonCard: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px',
+      padding: '8px 0',
+   },
+   anonText: {
+      fontSize: '0.875rem',
+      color: colors.textSecondary,
+   },
+   anonActions: {
+      display: 'flex',
+      gap: '12px',
+   },
+   switchLink: {
+      fontSize: '0.8rem',
+      fontWeight: 600,
+      color: colors.accent,
+      textDecoration: 'none',
+      flexShrink: 0,
+      ':hover': {
+         color: colors.accentHover,
+      },
+   },
+   suggestionsHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: '4px',
+   },
+   suggestionsLabel: {
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      color: colors.textPrimary,
+   },
+   seeAllLink: {
+      fontSize: '0.75rem',
+      fontWeight: 600,
+      color: colors.textPrimary,
+      textDecoration: 'none',
+      ':hover': {
+         color: colors.textSecondary,
+      },
+   },
+   suggestionsList: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '4px',
+   },
+   suggestionItem: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '4px 0',
+   },
+   suggestionInfo: {
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+      minWidth: 0,
+   },
+   suggestionUsername: {
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      color: colors.textPrimary,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+   },
+   suggestionSubtext: {
+      fontSize: '0.8rem',
+      color: colors.textSecondary,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+   },
+   avatarImage: {
+      borderRadius: '50%',
+   },
+});

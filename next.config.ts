@@ -1,0 +1,65 @@
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import type { NextConfig } from 'next';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+const supabaseKey =
+   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+
+function getSupabaseHost() {
+   try {
+      return new URL(supabaseUrl).hostname;
+   } catch {
+      return 'pggvzapkivjgsybyzjok.supabase.co';
+   }
+}
+
+const supabaseHost = getSupabaseHost();
+
+const nextConfig: NextConfig = {
+   env: {
+      NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabaseKey,
+   },
+   images: {
+      remotePatterns: [
+         { hostname: supabaseHost },
+         { hostname: 'lh3.googleusercontent.com' },
+         { hostname: 'image.mux.com' },
+         { hostname: 'picsum.photos' },
+      ],
+   },
+   reactCompiler: true,
+   reactStrictMode: true,
+   async headers() {
+      return [
+         {
+            source: '/(.*)',
+            headers: [
+               { key: 'X-Frame-Options', value: 'DENY' },
+               { key: 'X-Content-Type-Options', value: 'nosniff' },
+               { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+               { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+               { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
+               {
+                  key: 'Content-Security-Policy',
+                  value: [
+                     "default-src 'self'",
+                     `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://va.vercel-scripts.com`,
+                     "style-src 'self' 'unsafe-inline'",
+                     `img-src 'self' data: blob: https://${supabaseHost} https://image.mux.com https://lh3.googleusercontent.com https://picsum.photos https://cdn.jsdelivr.net`,
+                     "media-src 'self' blob: https://stream.mux.com https://*.mux.com",
+                     `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://image.mux.com https://stream.mux.com https://*.mux.com https://inferred.litix.io https://graphql.lottiefiles.com https://photon.komoot.io https://cdn.jsdelivr.net https://unpkg.com https://assets-v2.lottiefiles.com`,
+                     "font-src 'self'",
+                     "frame-src 'none'",
+                     "object-src 'none'",
+                     "base-uri 'self'",
+                     "form-action 'self'",
+                  ].join('; '),
+               },
+            ],
+         },
+      ];
+   },
+};
+
+export default withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })(nextConfig);

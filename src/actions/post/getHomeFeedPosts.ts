@@ -1,0 +1,88 @@
+'use server';
+import 'server-only';
+import { DB_NOW } from '@/src/lib/dbTime';
+import { getHideAiContent } from '@/src/lib/getHideAiContent';
+import { CursorSchema, validate } from '@/src/lib/validation';
+import { throwIfError } from '../../lib/unwrap';
+import type { PostsWithMedia } from '../../queries/posts';
+import { POST_WITH_MEDIA_SELECT } from '../../queries/posts';
+import {
+   applyVisibleCommentCount,
+   filterVisibleCommentCount,
+   hideLikesForNonOwners,
+   nextCursorFrom,
+   scopePostEngagementToUser,
+} from '../../utils/posts';
+import { getOptionalUser } from '../getAuthUser';
+
+const PAGE_SIZE = 10;
+
+export interface HomeFeedPage {
+   posts: PostsWithMedia;
+   nextCursor: string | null;
+}
+
+export async function getHomeFeedPosts(params: {
+   variant: 'home' | 'following';
+   cursor?: string | null;
+}) {
+   const { variant, cursor } = validate(CursorSchema, params);
+   const { supabase, user } = await getOptionalUser();
+   const hideAi = user ? await getHideAiContent() : false;
+
+   if (variant === 'home') {
+      let query = supabase
+         .from('posts')
+         .select(POST_WITH_MEDIA_SELECT)
+         .lte('created_at', DB_NOW)
+         .order('created_at', { ascending: false })
+         .limit(PAGE_SIZE);
+      if (cursor) query = query.lt('created_at', cursor);
+      if (hideAi) query = query.eq('is_ai', false);
+      if (user) {
+         query = scopePostEngagementToUser(query, user.id);
+      }
+      query = filterVisibleCommentCount(query);
+      const { data, error } = await query;
+      throwIfError({ error }, 'Failed to fetch home feed');
+      const posts = applyVisibleCommentCount(data ?? []);
+      return {
+         posts: hideLikesForNonOwners(posts, user?.id),
+         nextCursor: nextCursorFrom(posts, PAGE_SIZE),
+      };
+   }
+
+   if (!user) {
+      return { posts: [], nextCursor: null };
+   }
+
+   const { data: postIds, error: rpcError } = await supabase.rpc('get_following_posts', {
+      p_follower_id: user.id,
+      before_cursor: cursor ?? undefined,
+      page_size: PAGE_SIZE,
+   });
+
+   throwIfError({ error: rpcError }, 'Failed to fetch following feed');
+   if (!postIds || postIds.length === 0) {
+      return { posts: [], nextCursor: null };
+   }
+
+   let postsQuery = supabase
+      .from('posts')
+      .select(POST_WITH_MEDIA_SELECT)
+      .in(
+         'id',
+         postIds.map(p => p.id),
+      )
+      .lte('created_at', DB_NOW)
+      .order('created_at', { ascending: false });
+   if (hideAi) postsQuery = postsQuery.eq('is_ai', false);
+   postsQuery = scopePostEngagementToUser(postsQuery, user.id);
+   postsQuery = filterVisibleCommentCount(postsQuery);
+   const { data: posts, error: postsError } = await postsQuery;
+
+   throwIfError({ error: postsError }, 'Failed to fetch following feed');
+   const safePosts = applyVisibleCommentCount(posts ?? []);
+   const nextCursor = nextCursorFrom(postIds, PAGE_SIZE);
+   return { posts: hideLikesForNonOwners(safePosts, user?.id), nextCursor };
+}

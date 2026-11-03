@@ -1,0 +1,246 @@
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know. It's version 16.2.4.
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
+ALWAYS read docs before coding.
+Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+
+## Key breaking changes from your training data
+
+- **Middleware is now called Proxy.** The file is `proxy.ts` (not `middleware.ts`), located at `src/proxy.ts`. The exported function must be named `proxy` (or a default export). Do NOT create or reference `middleware.ts` — it will be ignored.
+
+<!-- END:nextjs-agent-rules -->
+
+<!-- BEGIN:stylex-agent-rules -->
+
+This project uses StyleX (@stylexjs/stylex) for all styling.
+Do NOT use Tailwind CSS classes or suggest them.
+All styles must use stylex.create() and stylex.props().
+When importing tokens(colors, radius) from `tokens.stylex.ts`, use relative imports, for example `../../styles/tokens.stylex`. For all of the other imports, use absolute imports.
+
+<!-- END:stylex-agent-rules -->
+
+<!-- BEGIN:package-manager-rules -->
+
+Use bun as a the package manager and code runner, exclusively.
+Also use bunx instead of npx.
+
+<!-- END:package-manager-rules -->
+
+<!-- BEGIN:naming-convention-rules -->
+
+# Component naming convention
+
+Components that are the root of their folder MUST use `index.tsx` + `index.stylex.ts`.
+Each component gets its own folder named after the component, with `index.tsx` and `index.stylex.ts` files inside.
+This keeps imports clean (`./components/MyComponent` rather than `./components/MyComponent/MyComponent`).
+
+<!-- END:naming-convention-rules -->
+
+<!-- BEGIN:state-management-rules -->
+
+# State management
+
+Use Zustand for all state management needs.
+Avoid React Context for global state unless absolutely necessary.
+
+<!-- END:state-management-rules -->
+
+<!-- BEGIN:client-components-rules -->
+
+# Client Components
+
+Avoid "use client" at all costs. Prefer Server Components by default.
+Only add "use client" when absolutely required (e.g., browser-only APIs, hooks that require client context).
+Push interactivity to the leaf nodes of the component tree.
+
+<!-- END:client-components-rules -->
+
+<!-- BEGIN:css-efficiency-rules -->
+
+# CSS Efficiency
+
+Do not add redundant or non-functional styles. Respect the global resets.
+Buttons already have `cursor: pointer`, links already have `text-decoration: none`, and the root font stack is already defined.
+Do not add `cursor: pointer` to buttons, `textDecoration: none` to links, or other declarations that do not change the computed style.
+Every StyleX class and container must serve a purpose.
+
+<!-- END:css-efficiency-rules -->
+
+<!-- BEGIN:dry-rules -->
+
+# Do Not Reimplement Logic
+
+If logic, markup, or styling is needed in more than one place, extract it into a reusable component, utility function, or shared StyleX definition.
+Do not copy-paste or rewrite the same logic across files.
+
+<!-- END:dry-rules -->
+
+<!-- BEGIN:icon-rules -->
+
+# Icons
+
+Use `react-icons` for all icons.
+Do not use custom inline SVG or raw SVG files.
+
+<!-- END:icon-rules -->
+
+<!-- BEGIN:typescript-rules -->
+
+# TypeScript
+
+Never use `any`.
+Always define proper types and interfaces. 
+
+<!-- END:typescript-rules -->
+
+<!-- BEGIN:biome-config -->
+
+# Biome Configuration
+
+Use Biome for formatting and linting. Key settings:
+
+- Line width: 100
+- Indent: 3 spaces
+- Line ending: lf
+- Quotes: single
+- Trailing commas: all
+- Semicolons: always
+- Bracket spacing: true
+- Arrow parentheses: as needed
+- Organize imports: enabled
+- No unused imports: error
+- No explicit any: error
+- No console: warn
+- Use exhaustive dependencies: error
+
+<!-- END:biome-config -->
+
+<!-- BEGIN:file-size-rules -->
+
+# File Size
+
+If a file gets larger than 400 lines, extract components into separate folders.
+Keep files focused and readable.
+
+<!-- END:file-size-rules -->
+
+<!-- BEGIN:react-compiler-rules -->
+
+# React Compiler
+
+This project uses React Compiler. Do not manually add `useMemo`, `useCallback`, or `React.memo` — the compiler handles memoization automatically.
+
+The only exception is when you need precise control over a memoized value used as an effect dependency, to prevent an effect from firing repeatedly when its dependencies haven't meaningfully changed.
+
+<!-- END:react-compiler-rules -->
+
+<!-- BEGIN:commit-rules -->
+
+# Commit Conventions
+
+After every medium-sized feature, commit with a very short commit message(3-7 words).
+Capitalize the first letter. Do not use prefixes like "chore:", "feat:", "fix:", etc.
+Example: "Add user profile page" not "feat: add user profile page".
+
+<!-- END:commit-rules -->
+
+<!-- BEGIN:clarification-rules -->
+
+# Ask for Clarification
+
+If you are unsure about something, the prompt is too vague, you see multiple valid options, or you feel something needs to be specified — stop and ask the user for clarification before proceeding.
+Do not guess or make assumptions when the right path is ambiguous.
+
+<!-- END:clarification-rules -->
+
+<!-- BEGIN:component-boundaries -->
+
+# Component Boundaries
+
+- `src/components/` = reusable UI components (atoms, molecules) that can be used anywhere in the app.
+- `src/pageComponents/` = route-scoped composition components that assemble reusable components into page-level layouts and data flows. These are specific to a route or feature group.
+
+Components in `pageComponents/` may import from `components/`, but not vice versa.
+
+<!-- END:component-boundaries -->
+
+<!-- BEGIN:no-comments-rules -->
+
+# No Comments
+
+Do not write comments in code. Write self-explanatory code with clear variable and function names instead.
+
+<!-- END:no-comments-rules -->
+
+<!-- BEGIN:linting-rules -->
+
+# Linting and building after task
+
+After finishing any coding task, always run the linter:
+
+```
+bun biome check --write .
+```
+
+If the linter passes, run the typecheck command:
+
+```
+bun run typecheck
+```
+
+At the end of the whole task, when you are finished, run the build command:
+
+```
+bun run build
+```
+
+Fix any errors before considering the task complete.
+
+<!-- END:linting-rules -->
+
+<!-- BEGIN:testing-rules -->
+
+# Testing
+
+Use Playwright for E2E tests. Run them with:
+
+```
+bun run test:e2e
+```
+
+Tests run against the free Supabase test project `instagram-clone-test` (`xvtkeobdlodfyfdkjuvt`). Load test environment variables from `.env.test` (see `.env.test.example`). CI runs via `.github/workflows/e2e.yml` using GitHub secrets: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ACCESS_TOKEN`, and `TEST_SUPABASE_PROJECT_REF`.
+
+<!-- END:testing-rules -->
+
+<!-- Begin:return-types -->
+
+# Return Types
+
+Just don't use them. Don't use the explicit return types at all.
+
+<!-- END:return-types -->
+
+<!-- BEGIN:fetch-pattern-rules -->
+
+# Data Fetching Pattern
+
+Two fetch patterns are used; use the right one for the context:
+
+- **Server actions** (`'use server'` in `src/actions/`): use for authenticated reads — feeds, posts, profiles, stories, notifications. These run on the server and handle RLS automatically via the server-side Supabase client.
+- **Client-direct query builders** (`src/queries/`): use inside `queryFn` in the DM section and anywhere that requires a client-side Supabase instance (e.g. realtime subscriptions). Pass the `supabase` client from `@/src/lib/supabase/client`.
+
+Never call `supabase.auth.getUser()` inside a `queryFn`. Use the `useAuthUser` hook to get the current user outside the query function, and guard with `enabled: !!authUser?.id`.
+
+<!-- END:fetch-pattern-rules -->
+
+<!-- BEGIN:html-nesting-rules -->
+
+# HTML Nesting
+
+A `<button>` must never be a descendant of another `<button>`. This causes a hydration error in Next.js.
+If a clickable container and a clickable child are both needed, make the container a `<div>` and put interactive elements (buttons, links) inside it as siblings, not nested.
+
+<!-- END:html-nesting-rules -->
